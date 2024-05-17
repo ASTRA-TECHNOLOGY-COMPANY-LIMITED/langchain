@@ -3,7 +3,17 @@ import { JsonOutputFunctionsParser } from "langchain/output_parsers";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import fs from "fs";
 
-const loader = new PDFLoader("./data/ITGRT201412040937427430.pdf");
+const file = process.argv[2];
+if (!file) throw new Error("Please provide a file path");
+
+const outputFlag = process.argv[3];
+if (outputFlag !== "-o")
+	console.log(
+		"No output file path provided, will output to test.json as default"
+	);
+const output = outputFlag === "-o" ? process.argv[4] : "test.json";
+
+const loader = new PDFLoader(file);
 
 const docs = await loader.load();
 
@@ -327,4 +337,4 @@ const result = await runnable.invoke(docsContent);
 
 const ensuredResult = ensureFields(result, extractionFunctionSchema);
 
-fs.writeFileSync("test1.json", JSON.stringify(ensuredResult));
+fs.writeFileSync(output, JSON.stringify(ensuredResult));
